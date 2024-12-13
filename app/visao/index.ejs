@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Player de Música</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="index.js">
+    <style>
+        /* Estilo para o slider de volume */
+        input[type="range"] {
+            -webkit-appearance: none;
+            background: transparent;
+        }
+
+        input[type="range"]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            background: #4B5563;
+            border-radius: 2px;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 12px;
+            width: 12px;
+            border-radius: 50%;
+            background: #9F7AEA;
+            margin-top: -4px;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-moz-range-track {
+            width: 100%;
+            height: 4px;
+            background: #4B5563;
+            border-radius: 2px;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            height: 12px;
+            width: 12px;
+            border-radius: 50%;
+            background: #9F7AEA;
+            cursor: pointer;
+            border: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-900">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold text-center mb-8 text-white">Player de Música</h1>
+
+        <!-- Formulário de Cadastro -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+            <!-- Cadastro de Álbum -->
+            <div class="bg-gray-800 p-6 rounded-lg shadow-xl border border-gray-700">
+                <h2 class="text-xl font-semibold mb-4 text-white">Cadastrar Álbum</h2>
+                <form class="space-y-4" action="/cadastrar-album" method="GET" onsubmit="return validarAlbum(event)">
+                    <div>
+                        <label class="block text-gray-300 mb-2">Nome do Álbum</label>
+                        <input type="text" name="nome" id="nome_album" required 
+                               class="w-full p-2 border bg-gray-700 text-white rounded-md focus:ring-2 focus:ring-purple-500">
+                    </div>
+                    <div>
+                        <label class="block text-gray-300 mb-2">Ano</label>
+                        <input type="number" name="ano" id="ano_album" required min="1900" max="2024"
+                               class="w-full p-2 border bg-gray-700 text-white rounded-md focus:ring-2 focus:ring-purple-500">
+                    </div>
+                    <button type="submit" class="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 transition duration-300">
+                        Cadastrar Álbum
+                    </button>
+                </form>
+            </div>
+
+            <!-- Cadastro de Artista -->
+            <div class="bg-gray-800 p-6 rounded-lg shadow-xl border border-gray-700">
+                <h2 class="text-xl font-semibold mb-4 text-white">Cadastrar Artista</h2>
+                <form class="space-y-4" action="/cadastrar-artista" method="GET" onsubmit="return validarArtista(event)"> 
+                    <div>
+                        <label class="block text-gray-300 mb-2">Nome do Artista</label>
+                        <input type="text" name="nome" id="nome_artista" required
+                               class="w-full p-2 border bg-gray-700 text-white rounded-md focus:ring-2 focus:ring-purple-500">
+                    </div>
+                    <div>
+                        <label class="block text-gray-300 mb-2">Gênero Musical</label>
+                        <input type="text" name="genero" id="genero_artista" required
+                               class="w-full p-2 border bg-gray-700 text-white rounded-md focus:ring-2 focus:ring-purple-500">
+                    </div>
+                    <button type="submit" class="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 transition duration-300">
+                        Cadastrar Artista
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Cadastro de Música -->
+        <div class="bg-gray-800 p-6 rounded-lg shadow-xl border border-gray-700 mb-8">
+            <h2 class="text-xl font-semibold mb-4 text-white">Cadastrar Música</h2>
+            <form class="grid grid-cols-1 md:grid-cols-2 gap-4" 
+                  action="/cadastrar-musica" 
+                  method="POST" 
+                  enctype="multipart/form-data"
+                  onsubmit="return validarMusica(event)">
+                <div>
+                    <label class="block text-gray-300 mb-2">Título da Música</label>
+                    <input type="text" name="titulo" id="titulo_musica" required
+                           class="w-full p-2 border bg-gray-700 text-white rounded-md focus:ring-2 focus:ring-purple-500">
+                </div>
+                <div>
+                    <label class="block text-gray-300 mb-2">Arquivo da Música</label>
+                    <input type="file" name="arquivo_musica" id="arquivo_musica" required
+                           accept=".mp3,.wav"
+                           class="w-full p-2 border bg-gray-700 text-white rounded-md focus:ring-2 focus:ring-purple-500">
+                </div>
+                <div>
+                    <label class="block text-gray-300 mb-2">Artista</label>
+                    <select name="id_artista" id="id_artista" class="w-full p-2 border bg-gray-700 text-white rounded-md focus:ring-2 focus:ring-purple-500">
+                        <option value="">Selecione um artista</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-gray-300 mb-2">Álbum</label>
+                    <select name="id_album" id="id_album" class="w-full p-2 border bg-gray-700 text-white rounded-md focus:ring-2 focus:ring-purple-500">
+                        <option value="">Selecione um álbum</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-gray-300 mb-2">Duraç��o (minutos)</label>
+                    <input type="number" name="duracao" id="duracao_musica" class="w-full p-2 border bg-gray-700 text-white rounded-md focus:ring-2 focus:ring-purple-500">
+                </div>
+                <div class="md:col-span-2">
+                    <button type="submit" class="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 transition duration-300 w-full">
+                        Cadastrar Música
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Player de Música -->
+        <div class="bg-gray-800 p-6 rounded-lg shadow-xl border border-gray-700">
+            <h2 class="text-xl font-semibold mb-4 text-white">Player</h2>
+            <div class="flex flex-col items-center">
+                <div class="w-full max-w-md space-y-4">
+                    <!-- Seleção de Música -->
+                    <div class="mb-6">
+                        <label class="block text-gray-300 mb-2">Selecione a Música</label>
+                        <select id="selecao_musica" class="w-full p-2 border bg-gray-700 text-white rounded-md focus:ring-2 focus:ring-purple-500">
+                            <option value="">Escolha uma música</option>
+                        </select>
+                    </div>
+
+                    <div class="bg-gray-700 p-4 rounded-lg">
+                        <div class="mb-4">
+                            <h3 class="text-lg font-medium text-white" id="musica_titulo">Nome da Música</h3>
+                            <p class="text-gray-400" id="musica_info">Artista - Álbum</p>
+                        </div>
+                        <div id="barra_progresso" class="w-full bg-gray-600 rounded-full h-2 mb-4 cursor-pointer">
+                            <div class="bg-purple-500 h-2 rounded-full w-0"></div>
+                        </div>
+                        <div class="flex justify-center space-x-6">
+                            <button id="btn_anterior" class="p-2 rounded-full hover:bg-gray-600 text-purple-400 transition duration-300">
+                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                                </svg>
+                            </button>
+                            <button id="btn_play" class="p-2 rounded-full hover:bg-gray-600 text-purple-400 transition duration-300">
+                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </button>
+                            <button id="btn_proximo" class="p-2 rounded-full hover:bg-gray-600 text-purple-400 transition duration-300">
+                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="mt-4 flex items-center justify-center space-x-2">
+                            <button id="btn_mute" class="p-2 rounded-full hover:bg-gray-600 text-purple-400 transition duration-300">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                          d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M12 18.012l-6-4.5H2v-3h4l6-4.5v12z">
+                                    </path>
+                                </svg>
+                            </button>
+                            <input type="range" id="volume_control" 
+                                   class="w-24 h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer"
+                                   min="0" max="100" value="100">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/carregarDados.js"></script>
+    <script src="/js/player.js"></script>
+    <script>
+    function validarAlbum(event) {
+        const nome = document.getElementById('nome_album').value.trim();
+        const ano = document.getElementById('ano_album').value;
+        
+        if (!nome) {
+            alert('Por favor, insira o nome do álbum');
+            event.preventDefault();
+            return false;
+        }
+        
+        if (!ano || isNaN(ano) || ano < 1900 || ano > 2024) {
+            alert('Por favor, insira um ano válido entre 1900 e 2024');
+            event.preventDefault();
+            return false;
+        }
+        
+        return true;
+    }
+
+    function validarMusica(event) {
+        const titulo = document.getElementById('titulo_musica').value.trim();
+        const arquivo = document.getElementById('arquivo_musica').files[0];
+        const duracao = document.getElementById('duracao_musica').value;
+        const artista = document.getElementById('id_artista').value;
+        const album = document.getElementById('id_album').value;
+        
+        if (!titulo) {
+            alert('Por favor, insira o título da música');
+            event.preventDefault();
+            return false;
+        }
+        
+        if (!arquivo) {
+            alert('Por favor, selecione um arquivo de música');
+            event.preventDefault();
+            return false;
+        }
+        
+        if (!duracao || duracao <= 0) {
+            alert('Por favor, insira uma duração válida');
+            event.preventDefault();
+            return false;
+        }
+        
+        if (!artista) {
+            alert('Por favor, selecione um artista');
+            event.preventDefault();
+            return false;
+        }
+        
+        if (!album) {
+            alert('Por favor, selecione um álbum');
+            event.preventDefault();
+            return false;
+        }
+        
+        return true;
+    }
+
+    function validarArtista(event) {
+        const nome = document.getElementById('nome_artista').value.trim();
+        const genero = document.getElementById('genero_artista').value.trim();
+        
+        if (!nome) {
+            alert('Por favor, insira o nome do artista');
+            event.preventDefault();
+            return false;
+        }
+        
+        if (!genero) {
+            alert('Por favor, insira o gênero musical');
+            event.preventDefault();
+            return false;
+        }
+        
+        return true;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const player = new Player();
+    });
+    </script>
+</body>
+</html>
